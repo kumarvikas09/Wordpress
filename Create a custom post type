@@ -1,0 +1,58 @@
+<?php
+// Register Custom Post Type Events
+function create_events_cpt() {
+
+	$labels = array(
+		'name' => _x( 'Events', 'Post Type General Name', 'theme-name' ),
+		'singular_name' => _x( 'Events', 'Post Type Singular Name', 'theme-name' ),
+		'menu_name' => _x( 'Events', 'Admin Menu text', 'theme-name' ),
+		'name_admin_bar' => _x( 'Events', 'Add New on Toolbar', 'theme-name' ),
+		'archives' => __( 'Events Archives', 'theme-name' ),
+		'attributes' => __( 'Events Attributes', 'theme-name' ),
+		'parent_item_colon' => __( 'Parent Events:', 'theme-name' ),
+		'all_items' => __( 'All Events', 'theme-name' ),
+		'add_new_item' => __( 'Add New Events', 'theme-name' ),
+		'add_new' => __( 'Add New', 'theme-name' ),
+		'new_item' => __( 'New Events', 'theme-name' ),
+		'edit_item' => __( 'Edit Events', 'theme-name' ),
+		'update_item' => __( 'Update Events', 'theme-name' ),
+		'view_item' => __( 'View Events', 'theme-name' ),
+		'view_items' => __( 'View Events', 'theme-name' ),
+		'search_items' => __( 'Search Events', 'theme-name' ),
+		'not_found' => __( 'Not found', 'theme-name' ),
+		'not_found_in_trash' => __( 'Not found in Trash', 'theme-name' ),
+		'featured_image' => __( 'Featured Image', 'theme-name' ),
+		'set_featured_image' => __( 'Set featured image', 'theme-name' ),
+		'remove_featured_image' => __( 'Remove featured image', 'theme-name' ),
+		'use_featured_image' => __( 'Use as featured image', 'theme-name' ),
+		'insert_into_item' => __( 'Insert into Events', 'theme-name' ),
+		'uploaded_to_this_item' => __( 'Uploaded to this Events', 'theme-name' ),
+		'items_list' => __( 'Events list', 'theme-name' ),
+		'items_list_navigation' => __( 'Events list navigation', 'theme-name' ),
+		'filter_items_list' => __( 'Filter Events list', 'theme-name' ),
+	);
+	$args = array(
+		'label' => __( 'Events', 'theme-name' ),
+		'description' => __( '', 'theme-name' ),
+		'labels' => $labels,
+		'menu_icon' => 'dashicons-admin-post',
+		'supports' => array('title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'author'),
+		'taxonomies' => array( 'category' ),
+		'public' => true,
+		'show_ui' => true,
+		'show_in_menu' => true,
+		'menu_position' => 5,
+		'show_in_admin_bar' => true,
+		'show_in_nav_menus' => true,
+		'can_export' => true,
+		'has_archive' => true,
+		'hierarchical' => false,
+		'exclude_from_search' => false,
+		'show_in_rest' => true,
+		'publicly_queryable' => true,
+		'capability_type' => 'post',
+	);
+	register_post_type( 'events', $args );
+
+}
+add_action( 'init', 'create_events_cpt', 0 );
