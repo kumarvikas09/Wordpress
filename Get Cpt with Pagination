@@ -1,0 +1,84 @@
+<div class="row">
+                <?php
+                $args = array(
+                    'post_type' => 'resource',
+                    'posts_per_page' => 1,
+                    'paged' => get_query_var('paged') ? get_query_var('paged') : 1 // Pagination
+                );
+
+                $the_query = new WP_Query($args);
+                if ($the_query->have_posts()):
+                    while ($the_query->have_posts()):
+                        $the_query->the_post();
+                        $post_id = get_the_ID();
+                        $thumbnail_url = '';
+
+                        if (has_post_thumbnail()) {
+                            $thumbnail_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+                        }
+
+                        ?>
+                        <div class="col col-12 col-md-6 col-lg-4 col-lg-4">
+                            <div class="post_card">
+                                <div class="img_wrap">
+                                    <a href="<?php echo the_permalink(); ?>"><img src="<?php echo $thumbnail_url; ?>"
+                                            alt="post_thumbnail" class="post_thumb"></a>
+                                </div>
+                                <div class="details">
+                                    <ul class="tags">
+                                        <li>
+                                            <a href="#">Audience Group</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Type</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">All</a>
+                                        </li>
+                                    </ul>
+                                    <h4 class="post_heading"><a
+                                            href="<?php echo the_permalink(); ?>"><?php echo the_title(); ?></a></h4>
+                                    <p><?php echo the_excerpt(); ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                    endwhile;
+                    wp_reset_postdata();
+
+                    // Custom pagination without next and previous buttons
+                    global $wp_query;
+                    $big = 999999999; // Need an unlikely integer
+                    $total_pages = $the_query->max_num_pages;
+                    $current_page = max(1, get_query_var('paged'));
+
+                    if ($total_pages > 1) {
+                        echo '<div class="post_pagination">';
+                        echo '<ul>';
+
+                        // Previous page link
+                        if ($current_page > 1) {
+                            echo '<li class="page-item control prev"><a class="page-link" href="' . get_pagenum_link($current_page - 1) . '"><img src="http://52.64.249.237/wp-content/uploads/2024/04/pagination_left_arrow.svg"
+                alt="shape"></a></li>';
+                        }
+
+                        // Page numbers
+                        for ($i = 1; $i <= $total_pages; $i++) {
+                            echo '<li class="page-item count' . (($current_page == $i) ? ' active' : '') . '"><a class="page-link" href="' . get_pagenum_link($i) . '">' . $i . '</a></li>';
+                        }
+
+                        // Next page link
+                        if ($current_page < $total_pages) {
+                            echo '<li class="page-item control next"><a class="page-link" href="' . get_pagenum_link($current_page + 1) . '"><img src="http://52.64.249.237/wp-content/uploads/2024/04/pagination_right_arrow.svg"
+                alt="shape"></a></li>';
+                        }
+
+                        echo '</ul>';
+                    }
+                    echo '</div>';
+
+                else:
+                    // No posts found
+                endif;
+                ?>
+            </div>
