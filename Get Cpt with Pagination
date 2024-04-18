@@ -53,7 +53,8 @@
                     $big = 999999999; // Need an unlikely integer
                     $total_pages = $the_query->max_num_pages;
                     $current_page = max(1, get_query_var('paged'));
-
+                    $show_dots_threshold = 5; // Change this threshold as needed
+                
                     if ($total_pages > 1) {
                         echo '<div class="post_pagination">';
                         echo '<ul>';
@@ -65,7 +66,12 @@
 
                         // Page numbers
                         for ($i = 1; $i <= $total_pages; $i++) {
-                            echo '<li class="page-item count' . (($current_page == $i) ? ' active' : '') . '"><a class="page-link" href="' . get_pagenum_link($i) . '">' . $i . '</a></li>';
+                            if ($i == 1 || $i == $total_pages || abs($i - $current_page) < $show_dots_threshold || ($i > $current_page - $show_dots_threshold && $i < $current_page + $show_dots_threshold)) {
+                                $current_class = ($current_page == $i) ? 'current' : '';
+                                echo '<li class="page-item count ' . $current_class . '"><a class="page-link" href="' . get_pagenum_link($i) . '">' . $i . '</a></li>';
+                            } elseif ($i == $current_page + $show_dots_threshold || $i == $current_page - $show_dots_threshold) {
+                                echo '<li class="page-item count dots"><a class="page-link" href="JavaScript:void(0)">...</a></li>';
+                            }
                         }
 
                         // Next page link
