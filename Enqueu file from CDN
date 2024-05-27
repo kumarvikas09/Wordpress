@@ -1,0 +1,9 @@
+function my_site_scripts() {
+    if ( is_page( 'choose-your-career' ) || is_single() ) {
+        // Enqueue Bootstrap CSS
+        wp_enqueue_style( 'bootstrap_css', get_stylesheet_directory_uri() . '/assets/bootstrap/bootstrap.min.css', null, time() );
+
+        // Enqueue Font Awesome CSS from CDN
+        wp_enqueue_style( 'font_awesome_css', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css', array(), '6.5.2' );
+    }
+}
