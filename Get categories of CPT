@@ -1,0 +1,14 @@
+    $resourceTopics = get_categories( array(
+                                                    'hide_empty' => false, // Only retrieve categories with no posts
+                                                    'taxonomy' => 'resource-topic', // Specify the taxonomy (usually 'category')
+                                                    'post_type' => 'resource', // Specify the custom post type
+                                                    ) );
+                                                    
+                                                    if ( $resourceTopics ) {
+                                                        foreach ( $resourceTopics as $category ) {
+                                                            echo '<option value="'.$category->slug.'">'. $category->name . '</option>';
+                                                    }
+                                                } else {
+                                                    echo 'No categories found';
+                                                }
+                                            ?>
