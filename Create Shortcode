@@ -1,0 +1,10 @@
+function wpdocs_the_shortcode_func() {
+	ob_start();
+
+	// include template with the arguments (The $args parameter was added in v5.5.0)
+	get_template_part( '/inc/sc-template');
+
+	return ob_get_clean();
+
+}
+add_shortcode( 'sc_temp', 'wpdocs_the_shortcode_func' );
