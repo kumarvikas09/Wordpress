@@ -1,0 +1,40 @@
+function aiken_widgets_init() {
+		// Footer widgets start
+	// Footer fisrt box widget
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Footer First Box', 'aiken' ),
+			'id'            => 'footer_first_widget',
+			'description'   => esc_html__( 'Add widgets here.', 'aiken' ),
+			'before_widget' => '<section id="%1$s" class="footer-sec-wrap widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h4 class="footer-sec-title">',
+			'after_title'   => '</h4>',
+			)
+		);
+	// Footer second box widget
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Footer Second Box', 'aiken' ),
+			'id'            => 'footer_second_widget',
+			'description'   => esc_html__( 'Add widgets here.', 'aiken' ),
+			'before_widget' => '<section id="%1$s" class="footer-sec-wrap widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h4 class="footer-sec-title">',
+			'after_title'   => '</h4>',
+			)
+		);
+	// Footer third box widget
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Footer Third Box', 'aiken' ),
+			'id'            => 'footer_third_widget',
+			'description'   => esc_html__( 'Add widgets here.', 'aiken' ),
+			'before_widget' => '<section id="%1$s" class="footer-sec-wrap widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h4 class="footer-sec-title">',
+			'after_title'   => '</h4>',
+		)
+	);
+}
+add_action( 'widgets_init', 'aiken_widgets_init' );
