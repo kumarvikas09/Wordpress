@@ -1,0 +1,54 @@
+<section class="blog_listing">
+    <div class="container">
+        <?php
+        $args = array(
+            'post_type' => 'post',
+            'posts_per_page' => 6,
+            'orderby' => 'date',
+            'order' => 'ASC'
+        );
+        $the_query = new WP_Query($args);
+        ?>
+        <div class="row">
+            <?php
+            if ($the_query->have_posts()):
+                while ($the_query->have_posts()):
+                    $the_query->the_post();
+                    $post_id = get_the_ID();
+                    $thumbnail_url = '';
+
+                    if (has_post_thumbnail()) {
+                        $thumbnail_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+                    }else{
+                        $thumbnail_url = '/wp-content/uploads/2024/06/post_1.png';
+                    }
+                    ?>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="inner_wrap">
+                            <figure>
+                                <img src="<?php echo $thumbnail_url; ?>" alt="">
+                            </figure>
+                            <div class="brief">
+                                <span class="date"><?php echo get_the_date("M d,Y"); ?></span>
+                                <h3 class="title"><a href="<?php echo the_permalink(); ?>"><?php echo the_title(); ?></a></h3>
+                                <a class="read_more_btn" href="<?php echo the_permalink(); ?>">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                endwhile;
+                wp_reset_postdata();
+                ?>
+            </div>
+            <?php
+            else:
+                echo 'No Posts Found';
+            endif;
+            ?>
+        <?php if ($the_query->found_posts > 6): // Check if there are more than 6 posts ?>
+        <div class="load_more text-center">
+            <a href="JavaScript:void(0)" class="bg_btn with_border">Load More</a>
+        </div>
+        <?php endif; ?>
+    </div>
+</section>
