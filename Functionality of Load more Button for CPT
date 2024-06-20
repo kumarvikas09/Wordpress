@@ -1,0 +1,72 @@
+//For function file
+
+function load_more_posts() {
+    $paged = isset($_POST['page']) ? intval($_POST['page']) : 1;
+
+    $args = array(
+        'post_type' => 'post',
+        'posts_per_page' => 6, // Load 3 posts per request
+        'paged' => $paged,
+        'orderby' => 'date',
+        'order' => 'ASC',
+    );
+    $the_query = new WP_Query($args);
+    
+    if ($the_query->have_posts()):
+        while ($the_query->have_posts()): $the_query->the_post();
+            $post_id = get_the_ID();
+            $thumbnail_url = has_post_thumbnail() ? get_the_post_thumbnail_url(get_the_ID(), 'full') : '/wp-content/uploads/2024/06/post_1.png';
+            ?>
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="inner_wrap">
+                    <figure>
+                        <img src="<?php echo $thumbnail_url; ?>" alt="">
+                    </figure>
+                    <div class="brief">
+                        <span class="date"><?php echo get_the_date("M d, Y"); ?></span>
+                        <h3 class="title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                        <a class="read_more_btn" href="<?php the_permalink(); ?>">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <?php
+        endwhile;
+        wp_reset_postdata();
+    endif;
+    
+    wp_die();
+}
+add_action('wp_ajax_load_more_posts', 'load_more_posts');
+add_action('wp_ajax_nopriv_load_more_posts', 'load_more_posts');
+
+
+
+//for js file
+ // load more js start
+  var page = 2; // Start from page 2 since 6 posts are already shown
+  var loading = false;
+  $(".load_more a").on("click", function (e) {
+    e.preventDefault();
+    if (!loading) {
+      loading = true;
+      $.ajax({
+        type: "POST",
+        url: "/wp-admin/admin-ajax.php",
+        data: {
+          action: "load_more_posts",
+          page: page,
+        },
+        success: function (response) {
+          if (response) {
+            $(".blog_listing .row").append(response);
+            page++;
+            loading = false;
+          } else {
+            $(".load_more").hide(); // Hide the load more button if no more posts
+            $("<p class='text-center'><b>No More Post Found!</b></p>").insertAfter(".load_more");
+          }
+        },
+      });
+    }
+  });
+  // load more js end
