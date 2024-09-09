@@ -1,0 +1,67 @@
+<<<<<<<<<<<<<<<in function file>>>>>>>>>>>>>
+// Shortcode for Black Bar
+include get_template_directory() . '/inc/theme/black_bar_shortcode.php';
+
+
+<<<<<<<<<<<black_bar_shortcode>>>>>>>>>>>>>>>>
+<?php
+
+// black_bar_shortcode
+function black_bar_shortcode( $atts ) {
+    $attributes = shortcode_atts( array(
+        'background_color' => 'black'
+    ), $atts );
+
+    ob_start();
+
+    // include template with the arguments
+    get_template_part( 'inc/src/black_bar', null, array('attributes' => $attributes) );
+
+    return ob_get_clean();
+}
+add_shortcode( 'black_bar', 'black_bar_shortcode' );
+
+
+<<<<<<<<<<<<<<black_bar>>>>>>>>>
+<?php
+$attributes = $args['attributes'];
+$background_color = $attributes['background_color'];
+// var_dump($attributes);
+
+$field_Group = acf_get_fields('group_66d69a309e36b');
+if ($field_Group != "") {
+
+    $bar_contents = get_field('bar_content', 'option');
+//    var_dump($bar_contents);
+}
+if($bar_contents){
+?>
+<section class="scrolling_section <?php echo $background_color; ?>">
+    <div class="container-fluid p-0">
+        <div class="scrollable_wrapper">
+            <ul>
+            <?php foreach ($bar_contents as $content) {
+                $text = $content['content'];
+                if ($text) { ?>
+                    <li><?php echo $text; ?></li>
+                <?php }
+            } ?>
+            </ul>
+
+            <ul>
+            <?php foreach ($bar_contents as $content) {
+                $text = $content['content'];
+                if ($text) { ?>
+                    <li><?php echo $text; ?></li>
+                <?php }
+            } ?>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<?php } ?>
+
+
+<<<<<<<<<<<<<<<<<shortcode>>>>>>>>>>>>>>>>>>>>>>
+[black_bar background_color="grey"]
