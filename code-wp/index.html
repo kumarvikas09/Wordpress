@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link href="./assets/prism/prism.css" rel="stylesheet">
+    <link href="./assets/line-number/line-number.css" rel="stylesheet">
+    <script src="./assets/prism/prism.js"></script>
+    <script src="./assets/line-number/line-number.js"></script>
+
+    <title>Wordpress Code Snippets | Jagsness</title>
+</head>
+
+<body>
+
+    <div class="container-fluid wordpressFunctionAP">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 left">
+                    <div class="inner position-sticky" style="top:10px;">
+                        <ul>
+                            <li>
+                                Options
+                            </li>
+                            <li>
+                                <a href="#cmnFunc">
+                                    Common Function
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#func_php">
+                                    For function.php (when you create a theme from scratch )
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#woocmrc">
+                                    Woocommerce
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#acf">
+                                    Advanced Custom Fields
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-8 right">
+                    <ul>
+
+                        <!--- getting content on front end --->
+                        <li id="cmnFunc">
+                            <div>
+                                <span class="text">
+                                    Get Basic Things
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Get site URL
+get_site_url();
+
+//Get site Title
+the_title();
+
+//Get post Permalink
+the_permalink();
+
+//Get Post URL
+the_post_thumbnail_url();
+
+//Get Post Date
+the_date('d M Y');
+
+//Get Author
+the_author();
+
+//Get Trim Content
+wp_trim_words( get_the_content(), 30, '[...]' );
+
+//Add hyphen to a string
+sanitize_title_with_dashes(get_the_title());
+
+//Get Excerpt
+the_excerpt();
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Get Logo on Frontend
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">$custom_logo_id = get_theme_mod( 'custom_logo' );
+$custom_logo_url = wp_get_attachment_image_url( $custom_logo_id , 'full' );
+echo '&lt;img src="' . esc_url( $custom_logo_url ) . '" alt="Site Logo">';
+endif;</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Get Page Featured Image
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">if (has_post_thumbnail( $post->ID ) ): ?>
+    $image = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'single-post-thumbnail');
+    echo $image[0];
+endif;</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Get Blog Listing Featured Image
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">if (is_home() && get_option('page_for_posts') ) {
+    $img = wp_get_attachment_image_src(get_post_thumbnail_id(get_option('page_for_posts')),'full');
+    $featured_image = $img[0];
+    $featured_image;
+}</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Get categories on single post
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Get categories on single post
+global $product;
+
+$terms = get_the_terms( $product->get_id(), 'product_cat' );
+foreach ( $terms as $term ) {
+    echo $term->name;
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Get tags on single post
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Get tags on single post
+global $product;
+
+$terms = get_the_terms( $product->get_id(), 'product_tags' );
+foreach ( $terms as $term ) {
+    echo $term->name;
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+
+                        <!---- function file code --->
+                        <li id="func_php">
+                            <div>
+                                <span class="text">
+                                    Add theme support of Custom Logo
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">add_theme_support( 'custom-logo', $defaults );</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Add theme support of title tag
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">add_theme_support( 'title-tag' );</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Adding Wordpress Menu
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//first need to register menu in function file  
+function register_my_menu() {
+   register_nav_menu('header-menu',__( 'header' ));
+   register_nav_menu('footer-menu',__( 'footer' ));
+}
+
+add_action( 'init' , 'register_TM_menu' );
+
+// add this code where you want to show your menu  
+wp_nav_menu(
+    array(
+        'theme_location'   =>     'header',
+        'menu'             =>     'header-menu',
+        'menu_class'       =>     'navbar-nav',
+        'menu_id'          =>     'primary-menu',
+        'container_class'  =>     'menu-inner',
+    )
+)
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Add class in menu li.
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//add class in li
+add_filter ( 'nav_menu_css_class', 'add_class_to_menu_list', 10, 4 );
+
+function add_class_to_menu_list ( $classes, $item, $args, $depth ){
+    if ($args->theme_location == 'header') { /**** according to theme location *****/
+      $classes[] = 'gc-nav-item'; 
+    }
+    
+    if ($args->theme_location == 'sidebar') { /**** according to theme location *****/
+      $classes[] = 'gc-sidebar-item'; 
+    }
+    return $classes;
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Add class in menu anchor.
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//add class in anchor
+add_filter( 'nav_menu_link_attributes', 'add_class_to_list_anchor', 10, 4 );
+
+function add_class_to_list_anchor($atts, $item, $args, $depth) {
+    if ($args->theme_location == 'header') { /**** according to theme location *****/
+        $atts['class'] = "gc-nav-link";
+    }
+  return $atts;
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Overide Submenu Class
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//overide submenu class
+add_filter( 'nav_menu_submenu_css_class', 'add_sub_menu_class', 10, 4);
+
+function add_sub_menu_class($atts, $args, $depth) {
+    if ($args->theme_location == 'sidebar') { /**** according to theme location *****/
+        return array('gc-sidebar-submenu');
+    }
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Register Sidebar
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Register Sidebar in function.php
+register_sidebar(
+    array(
+        'name' => _x('Mail Widget', 'backend', 'cargopress-pt'),
+        'id' => 'mail-widgets',
+        'description' => _x('Header area for Mail ID.', 'backend', 'cargopress-pt'),
+        'before_widget' => '<div class="widget  %2$s">',
+        'after_widget' => '</div>',
+    )
+);
+
+// Show on frontend
+if (is_active_sidebar('mail-widgets')) {
+    dynamic_sidebar('mail-widgets');
+}
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Create Shorcode
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Create Shorcode  
+function shortcode_function($sc_atts){
+    $sc_default = array(
+        'id' => '0',
+    );
+    $sc_page_id = shortcode_atts($sc_default, $sc_atts);
+    
+    // your code goes here or include any file 
+}
+
+add_shortcode( 'shortcode_name' , 'shortcode_function' );
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+
+                        <!-- for woocommerce pages -->
+                        <li id="woocmrc">
+                            <div>
+                                <span class="text">
+                                    Get categories and subcategories of post
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Get categories and subcategories of post 
+$outlet_type = get_terms(["taxonomy" => "product_cat", "parent" => 0]);
+foreach($outlet_type as $outlet){
+    $terms = get_terms( 
+        array(
+            'taxonomy'   => 'product_cat',
+            'hide_empty' => false,
+            'parent'     => $outlet->term_id
+            ) 
+    );
+    $html .='<span data-id="'.$outlet->term_id.'" value="'.$outlet->name.'">'.$outlet->name.'</span>'; foreach ( $terms as $term ) { $html .='<span data-id="'.$term->term_id.'" value="'.$term->name.'">'.$term->name.'</span>';
+                                } } echo $html;
+                                </code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Redirect after Login & Registration
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Redirect user after login and registration to shop page
+function ap_login_redirect_wc( $redirect, $user ) {
+    return home_url('/shop');
+}
+add_action('woocommerce_login_redirect', 'ap_login_redirect_wc', 10, 2);
+
+
+function ap_registration_redirect_wc() {
+//    wp_logout();
+    return home_url('/shop');
+}
+add_action('woocommerce_registration_redirect', 'ap_registration_redirect_wc', 2);
+
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Logout from Woocommerce
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-html">&lt;!-- Logout Link (add in href) -->
+&lt;a href="./my-account/customer-logout/?_wpnonce=2bbbac43a8&customer-logout=true">Logout&lt;/a>
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li id="wc_support">
+                            <div>
+                                <span class="text">
+                                    Allow woocommerce support
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">function woocommerce_support() {
+    add_theme_support( 'woocommerce' );
+ }      
+ add_action( 'after_setup_theme', 'woocommerce_support' );
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    When search result == 1 then stop auto redirection to single product page using filter below:-                                    
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Customize Woocommerce Shop | Categories | Search pages using archive-product.php
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//First allow woocommerce support in function.php (mentioned above)	&uarr;&uarr;
+//Copy archive-product.php from woocommerce plugin
+//Create Woocommerce folder inside your theme and paste archive-product.php 
+//( yourtheme/woocommerce/archive-product.php )
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <span class="text">
+                                    Customize Woocommerce Single product page using single-product.php
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Copy single-product.php from woocommerce plugin
+//Create Woocommerce folder inside your theme and paste single-product.php
+//( yourtheme/woocommerce/single-product.php )
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+
+                        <!-- ACF Related -->
+                        <li id="acf">
+                            <div>
+                                <span class="text">
+                                    Get file size
+                                </span>
+
+                                <span class="function">
+                                    <pre class="line-numbers">
+<code class="language-php">//Get file size of upladed file using ACF (this method can also used for normal condition)
+while( have_rows('ap-zips') ) : the_row(); 
+    $images = get_sub_field('photos_zip' );
+    $fileSize = $images['filesize'];
+    $fileSize = size_format($fileSize, 2);
+    echo $images['url'];
+    echo $fileSize;
+endwhile; 
+</code>
+                                </pre>
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
