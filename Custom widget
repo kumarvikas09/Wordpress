@@ -1,0 +1,50 @@
+// Show Widgets Sidebar
+if (!function_exists('widgets_sidebar')) :
+	function widgets_sidebar()
+	{
+		register_sidebar(array(
+			'name'          => __('Footer Logo', 'custom_theme'),
+			'id'            => 'footer_logo',
+			'description'   => __('This is First Footer Widget', 'custom_theme'),
+			'before_widget' => '',
+			'after_widget'  => '',
+		));
+		register_sidebar(array(
+			'name'          => __('Footer Menu', 'custom_theme'),
+			'id'            => 'footer_menu',
+			'description'   => __('This is Second Footer Widget', 'custom_theme'),
+			'before_widget' => '<div id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</div>',
+			'before_title'  => '<h2 class="widgettitle">',
+			'after_title'   => '</h2>',
+		));
+		register_sidebar(array(
+			'name'          => __('Social Icons', 'custom_theme'),
+			'id'            => 'social_icons',
+			'description'   => __('This is third Footer Widget', 'custom_theme'),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '<h2 class="widgettitle">',
+			'after_title'   => '</h2>',
+		));
+		register_sidebar(array(
+			'name'          => __('Copyright text', 'custom_theme'),
+			'id'            => 'copyright_text',
+			'description'   => __('This is Fourth Footer Widget', 'custom_theme'),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '<h2 class="widgettitle">',
+			'after_title'   => '</h2>',
+		));
+		register_sidebar(array(
+			'name'          => __('Policies Links', 'custom_theme'),
+			'id'            => 'policies_links',
+			'description'   => __('This is Blog Sidebar Widget', 'custom_theme'),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '<h2 class="widgettitle">',
+			'after_title'   => '</h2>',
+		));
+	}
+	add_action('widgets_init', 'widgets_sidebar');
+endif;
