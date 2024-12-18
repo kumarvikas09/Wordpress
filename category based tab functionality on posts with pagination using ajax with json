@@ -1,0 +1,239 @@
+//index.php
+
+<div class="container">
+    <ul class="nav nav-pills nav-fill my-5">
+        <li class="nav-item">
+            <a class="nav-link btn_cat active" href="#">All</a>
+        </li>
+        <?php
+        $args = array(
+            'taxonomy' => 'genre',
+            'orderby' => 'name',
+            'order' => 'ASC',
+            'exclude' => array(1),
+        );
+
+        $cats = get_categories($args);
+
+        foreach ($cats as $cat) {
+            ?>
+            <li class="nav-item">
+                <a class="nav-link btn_cat" href="<?php echo get_category_link($cat->term_id) ?>"
+                    data-tab="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></a>
+            </li>
+            <?php
+        }
+        ?>
+    </ul>
+    <?php
+    $args = array(
+        'post_type' => 'game',
+        'post_status' => 'publish',
+        'posts_per_page' => 6,
+        'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
+        // 's' => 'evil', // search querry with using word 'evil'
+        // 'p' => 71, // search post basis of ID
+        // 'name' => 'gta', // search post with slug
+        // 'post__in' => array( 71, 85, 72, 84, 60 ), // only show selected post
+        // 'post__not_in' => array( 71, 85, 72, 84, 60 ), // exclude selected post
+        // 'order' => 'DESC',
+        // 'orderby' => 'menu_order', //post by menu order in backend
+        // 'no_found_rows' => true, //stop pagination
+
+        // 'tax_query' => array(
+        //     // 'relation' => 'AND',
+        //     array(
+        //         'taxonomy' => 'genre',
+        //         'terms' => 'adventure',
+        //         'field' => 'slug',
+        //         'operator' => 'AND'
+        //     )
+        // )
+        // 'meta_query' => array(
+        //     array(
+        //     'key' => '_thumbnail_id',
+        //     //  'compare' => 'EXISTS',
+        //     'opreator' => 'NOT IN'
+        //     ),
+        // ),
+    );
+
+    // The Query
+    $query = new WP_Query($args);
+    if ($query->have_posts()) {
+        ?>
+        <div class="inner_wrap position-relative">
+            <div class="row" style="row-gap: 50px">
+                <?php
+                while ($query->have_posts()) {
+                    $query->the_post(); // Move this inside the loop
+                    ?>
+                    <div class="col-4">
+                        <div class="card">
+                            <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                            <div class="card-body">
+                                <h5 class="card-title"><?php echo the_title(); ?></h5>
+                                <p class="card-text"><?php the_excerpt(); ?></p>
+                                <a href="<?php the_permalink(); ?>" class="btn btn-primary">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="preloader">
+                <div class="spinner-border" role="status">
+                </div>
+            </div>
+        </div>
+        <?php
+    } else {
+        echo '<p class="text-center dark">No Post Found</p>';
+    }
+    ?>
+    <div class="pagination justify-content-center my-5 " style="gap: 10px; font-size: 20px;">
+        <?php
+        $big = 999999999;
+        echo paginate_links(array(
+            'base' => str_replace($big, '%#%', get_pagenum_link($big)),
+            'format' => '?paged=%#%',
+            'current' => max(1, get_query_var('paged')),
+            'total' => $query->max_num_pages
+        ));
+        // Restore original Post Data
+        wp_reset_postdata();
+        ?>
+    </div>
+</div>
+
+//function.php
+
+function tab_related_post_with_json() {
+    $tabs = isset($_POST['tab']) ? sanitize_text_field($_POST['tab']) : '';
+    $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+
+    $args = array(
+        'post_type'      => 'game',
+        'posts_per_page' => 6,
+        'paged'          => $paged,
+        'post_status'    => 'publish',
+    );
+
+    if (!empty($tabs)) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'genre',
+                'terms'    => $tabs,
+                'field'    => 'slug',
+                'operator' => 'IN',
+            ),
+        );
+    }
+
+    $the_query = new WP_Query($args);
+    $posts = array();
+
+    if ($the_query->have_posts()) {
+        while ($the_query->have_posts()) {
+            $the_query->the_post();
+            $post_id = get_the_ID();
+
+            $posts[] = array(
+                'alt_text'      => get_post_meta(get_post_thumbnail_id($post_id), '_wp_attachment_image_alt', true),
+                'thumbnail_url' => get_the_post_thumbnail_url(),
+                'permalink'     => get_permalink(),
+                'title'         => get_the_title(),
+                'excerpt'       => get_the_excerpt(),
+            );
+        }
+    }
+
+    wp_reset_postdata();
+
+    // Add total pages and current page to the response
+    wp_send_json(array(
+        'posts'        => $posts,
+        'max_pages'    => $the_query->max_num_pages,
+        'current_page' => $paged,
+    ));
+}
+add_action('wp_ajax_tab_related_post_with_json', 'tab_related_post_with_json');
+add_action('wp_ajax_nopriv_tab_related_post_with_json', 'tab_related_post_with_json');
+
+
+//functon.js
+// JavaScript: Pagination and Filtering with ajax using json
+$(".btn_cat").click(function (e) {
+    e.preventDefault();
+    // Show preloader
+    $(".preloader").addClass("active");
+    $(".btn_cat").removeClass("active");
+    $(this).addClass("active");
+    let tab = $(this).data("tab");
+    let page = 1; //reset to page 1 always when tab click
+    load_data(tab, page); 
+});
+
+jQuery(document).on("click", ".pagination .custom_pagination", function (e) {
+    e.preventDefault();
+
+    let page = jQuery(this).data("page");
+    let tab = jQuery(".btn_cat.active").data("tab"); // Get active tab or empty string
+
+    load_data(tab, page);
+});
+
+function load_data(tab, page) {
+    $.ajax({
+        url: "/wp-admin/admin-ajax.php",
+        type: "POST",
+        data: {
+            action: "tab_related_post_with_json",
+            tab: tab,
+            paged: page,
+        },
+        success: function (response) {
+            if (response && response.posts.length > 0) {
+                $(".row").empty();
+                response.posts.forEach((post) => {
+                    $(".row").append(`
+                        <div class="col-4">
+                            <div class="card">
+                                <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                                <div class="card-body">
+                                    <h5 class="card-title">${post.title}</h5>
+                                    <p class="card-text">${post.excerpt}</p>
+                                    <a href="${post.permalink}" class="btn btn-primary">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+
+                // Update pagination
+                let paginationContainer = $(".pagination");
+                paginationContainer.empty();
+
+                if (response.max_pages > 1) {
+                    for (let i = 1; i <= response.max_pages; i++) {
+                        paginationContainer.append(`
+                            <a href="#" class="custom_pagination ${response.current_page == i ? "current" : ""}" data-page="${i}">${i}</a>
+                        `);
+                    }
+                }
+            } else {
+                $(".row").html(
+                    "<span class='no_data_found alert alert-danger text-center' role='alert'>No posts found</span>"
+                );
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+        complete: function () {
+            // Hide preloader
+            $(".preloader").removeClass("active");
+        },
+    });
+}
