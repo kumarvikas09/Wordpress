@@ -1,0 +1,204 @@
+// Index.php
+
+<div class="container">
+    <ul class="nav nav-pills nav-fill my-5">
+        <li class="nav-item">
+            <a class="nav-link btn_cat active" href="#">All</a>
+        </li>
+        <?php
+        $args = array(
+            'taxonomy' => 'genre',
+            'orderby' => 'name',
+            'order' => 'ASC',
+            'exclude' => array(1),
+        );
+
+        $cats = get_categories($args);
+
+        foreach ($cats as $cat) {
+            ?>
+            <li class="nav-item">
+                <a class="nav-link btn_cat" href="<?php echo get_category_link($cat->term_id) ?>"
+                    data-tab="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></a>
+            </li>
+            <?php
+        }
+        ?>
+    </ul>
+    <?php
+    $args = array(
+        'post_type' => 'game',
+        'post_status' => 'publish',
+        'posts_per_page' => 6,
+        'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
+    );
+
+    // The Query
+    $query = new WP_Query($args);
+    if ($query->have_posts()) {
+        ?>
+        <div class="inner_wrap position-relative">
+            <div class="row" style="row-gap: 50px">
+                <?php
+                while ($query->have_posts()) {
+                    $query->the_post(); // Move this inside the loop
+                    ?>
+                    <div class="col-4">
+                        <div class="card">
+                            <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                            <div class="card-body">
+                                <h5 class="card-title"><?php echo the_title(); ?></h5>
+                                <p class="card-text"><?php the_excerpt(); ?></p>
+                                <a href="<?php the_permalink(); ?>" class="btn btn-primary">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
+            <div class="preloader">
+                <div class="spinner-border" role="status">
+                </div>
+            </div>
+        </div>
+        <?php
+    } else {
+        echo '<p class="text-center dark">No Post Found</p>';
+    }
+    ?>
+    <div class="pagination justify-content-center my-5 " style="gap: 10px; font-size: 20px;">
+        <?php
+        $big = 999999999;
+        echo paginate_links(array(
+            'base' => str_replace($big, '%#%', get_pagenum_link($big)),
+            'format' => '?paged=%#%',
+            'current' => max(1, get_query_var('paged')),
+            'total' => $query->max_num_pages
+        ));
+        // Restore original Post Data
+        wp_reset_postdata();
+        ?>
+    </div>
+</div>
+
+          // function.js
+
+          $(document).ready(function () {
+  let page = 1; // Start with page 1
+
+  $(".btn_cat").click(function (e) {
+    e.preventDefault();
+    // Show preloader
+    $(".preloader").addClass("active");
+    $(".btn_cat").removeClass("active");
+    $(this).addClass("active");
+    let tab = $(this).data("tab");
+    page = 1; // Reset to page 1 when filtering
+    loadPosts(tab, page);
+    // console.log(tab);
+  });
+
+  $(document).on("click", ".ajax_pagination a", function (e) {
+    e.preventDefault();
+
+    page = $(this).attr("href").split("paged=")[1] || 1; // Get the clicked page number
+    let tab = $(".btn_cat.active").data("tab") || ""; // Active tab value
+
+    loadPosts(tab, page);
+  });
+
+  function loadPosts(tab, page) {
+    $.ajax({
+      url: "/wp-admin/admin-ajax.php",
+      type: "POST",
+      data: {
+        action: "tab_related_post",
+        tab: tab,
+        paged: page,
+      },
+      success: function (responce) {
+        if (responce.length > 0) {
+          $(".row").empty();
+          $(".row").append(responce);
+        } else {
+          $(".row").html(
+            "<span class='no_data_found alert alert-danger text-center' role='alert'>No posts found</span>"
+          );
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error(xhr);
+      },
+      complete: function () {
+        // Hide preloader
+        $(".preloader").removeClass("active");
+        $(".pagination").hide();
+      },
+    });
+  }
+});
+
+// function.php
+function tab_related_post(){
+    $tabs = $_POST['tab'];
+    $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+    
+    $args = array(
+        'post_type' => 'game',
+        'posts_per_page' => 6,
+        'post_status' => "publish",
+        'paged' => $paged,
+        'tax_query' => array(
+            array(
+                'taxonomy' => 'genre',
+                'terms' => $tabs,
+                'field' => 'slug',
+                'operator' => 'IN'
+            )
+        )
+    );
+
+    if($tabs == ""){
+        $args['tax_query'] = '';
+    }
+
+    $the_query = new WP_Query($args);
+    if ($the_query->have_posts()):
+        while ($the_query->have_posts()): $the_query->the_post();
+            $post_id = get_the_ID();
+            ?>
+            <div class="col-4">
+                    <div class="card">
+                        <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo the_title(); ?></h5>
+                            <p class="card-text"><?php the_excerpt(); ?></p>
+                            <a href="<?php the_permalink(); ?>" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+            <?php
+        endwhile;
+        ?>
+        <div class="ajax_pagination d-flex justify-content-center my-5 " style="gap: 10px; font-size: 20px;">
+        <?php
+        $big = 999999999;
+        echo paginate_links(array(
+            'base'      => '%_%',
+            'format'    => '?paged=%#%',
+            'current'   => $paged,
+            'total'     => $the_query->max_num_pages,
+            'prev_text' => __('« Prev'),
+            'next_text' => __('Next »'),
+        ));
+        ?>
+    </div>
+    <?php
+        wp_reset_postdata();
+    endif;
+
+    wp_die(); // Important: Stop further processing and return clean response
+}
+add_action('wp_ajax_tab_related_post', 'tab_related_post');
+add_action('wp_ajax_nopriv_tab_related_post', 'tab_related_post');
