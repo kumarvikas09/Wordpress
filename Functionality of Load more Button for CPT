@@ -9,6 +9,7 @@ function load_more_posts() {
         'paged' => $paged,
         'orderby' => 'date',
         'order' => 'ASC',
+        'offset' => 6
     );
     $the_query = new WP_Query($args);
     
