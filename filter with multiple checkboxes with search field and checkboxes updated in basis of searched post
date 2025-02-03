@@ -1,0 +1,596 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>simple.php<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<div class="container">
+    <div class="row align-items-center">
+        <div class="col-md-4">
+            <p class="post_count fw-bold fs-4">Loading...</p>
+        </div>
+        <div class="col-md-8">
+            <div class="search my-3">
+                <form action="#" class="d-flex flex-nowrap" id="search_form">
+                    <input type="text" class="form-control" name="search" id="search_field" required>
+                    <input type="submit" name="search_btn" class="btn btn-primary" id="search_btn">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="inner_wrapper" style="/*position: sticky; top: 60px;*/">
+                <div class="tag_box">
+                    
+                </div>
+                <ul class="nav nav-pills nav-fill mb-5 flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link btn_cat active disabled" href="#">Genre</a>
+                        <span class="genreCheckCount"></span>
+                    </li>
+                    <?php
+
+                    $args = array(
+                        'taxonomy' => 'genre',
+                        'orderby' => 'name',
+                        'order' => 'ASC',
+                    );
+
+                    $cats = get_categories($args);
+
+                    foreach ($cats as $cat) {
+                        ?>
+                        <div class="filter_check">
+                            <input type="checkbox" name="genre" value="<?php echo $cat->term_id; ?>"
+                                id="<?php echo $cat->slug; ?>">
+                            <label for="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></label>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <li class="reset">Reset</li>
+                </ul>
+                <ul class="nav nav-pills nav-fill my-5 flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link btn_cat active disabled" href="#">Award</a>
+                        <span class="awardCheckCount"></span>
+                    </li>
+                    <?php
+                    $args = array(
+                        'taxonomy' => 'award',
+                        'orderby' => 'name',
+                        'order' => 'ASC',
+                    );
+
+                    $cats = get_categories($args);
+
+                    foreach ($cats as $cat) {
+                        ?>
+                        <div class="filter_check">
+                            <input type="checkbox" name="award" value="<?php echo $cat->term_id; ?>"
+                                id="<?php echo $cat->slug; ?>">
+                            <label for="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></label>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <li class="reset">Reset</li>
+                </ul>
+                <ul class="nav nav-pills nav-fill my-5 flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link btn_cat active disabled" href="#">Language</a>
+                        <span class="langCheckCount"></span>
+                    </li>
+                    <?php
+                    $args = array(
+                        'taxonomy' => 'language',
+                        'orderby' => 'name',
+                        'order' => 'ASC',
+                    );
+
+                    $cats = get_categories($args);
+
+                    foreach ($cats as $cat) {
+                        ?>
+                        <div class="filter_check">
+                            <input type="checkbox" name="lang" value="<?php echo $cat->term_id; ?>"
+                                id="<?php echo $cat->slug; ?>">
+                            <label for="<?php echo $cat->slug; ?>"><?php echo $cat->name; ?></label>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <li class="reset">Reset</li>
+                </ul>
+            </div>
+        </div>
+        <?php
+        $args = array(
+            'post_type' => 'game',
+            'post_status' => 'publish',
+            'posts_per_page' => 6,
+            'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
+            
+            // 's' => 'evil', // search querry with using word 'evil'
+            // 'p' => 71, // search post basis of ID
+            // 'name' => 'gta', // search post with slug
+            // 'post__in' => array( 71, 85, 72, 84, 60 ), // only show selected post
+            // 'post__not_in' => array( 71, 85, 72, 84, 60 ), // exclude selected post
+            // 'order' => 'DESC',
+            // 'orderby' => 'menu_order', //post by menu order in backend
+            // 'no_found_rows' => true, //stop pagination
+        
+            // 'tax_query' => array(
+            //     // 'relation' => 'AND',
+            //     array(
+            //         'taxonomy' => 'genre',
+            //         'terms' => 'adventure',
+            //         'field' => 'slug',
+            //         'operator' => 'AND'
+            //     )
+            // )
+            // 'meta_query' => array(
+            //     array(
+            //     'key' => '_thumbnail_id',
+            //     //  'compare' => 'EXISTS',
+            //     'opreator' => 'NOT IN'
+            //     ),
+            // ),
+        );
+
+        // The Query
+        $query = new WP_Query($args);
+        $count = $query->found_posts;
+        if ($query->have_posts()) {
+            ?>
+
+            <div class="inner_wrap position-relative col-md-8">
+                <p class="postCount d-none">
+                    <?php echo $count; ?>
+                </p>
+                <div class="row" style="row-gap: 50px">
+                    <?php
+                    while ($query->have_posts()) {
+                        $query->the_post(); // Move this inside the loop
+                        ?>
+                        <div class="col-4">
+                            <div class="card">
+                                <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo the_title(); ?></h5>
+                                    <p class="card-text"><?php the_excerpt(); ?></p>
+                                    <a href="<?php the_permalink(); ?>" class="btn btn-primary">Go</a>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+                <div class="preloader">
+                    <div class="spinner-border" role="status">
+                    </div>
+                </div>
+                <?php
+        } else {
+            echo '<p class="text-center dark">No Post Found</p>';
+        }
+        ?>
+            <div class="pagination justify-content-center my-5 " style="gap: 10px; font-size: 20px;">
+                <?php
+                $big = 999999999;
+                echo paginate_links(array(
+                    'base' => str_replace($big, '%#%', get_pagenum_link($big)),
+                    'format' => '?paged=%#%',
+                    'current' => max(1, get_query_var('paged')),
+                    'total' => $query->max_num_pages
+                ));
+                // Restore original Post Data
+                wp_reset_postdata();
+                ?>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>query.php<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<?php
+function tab_related_post()
+{
+    $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+    // Initialize query arguments
+    $args = array(
+        'post_type' => 'game',
+        'posts_per_page' => 6,
+        'paged' => $paged,
+        'post_status' => "publish",
+        'tax_query' => array(
+            'relation' => 'AND'),
+    );
+
+    // Check if genres are set
+    if (isset($_POST['genre']) && !empty($_POST['genre'])) {
+        $genres = $_POST['genre'];
+        $args['tax_query'][] = array(
+            'taxonomy' => 'genre',
+            'field' => 'term_id',
+            'terms' => $genres,
+        );
+    }
+
+    // Check if awards are set
+    if (isset($_POST['award']) && !empty($_POST['award'])) {
+        $awards = $_POST['award'];
+        $args['tax_query'][] = array(
+            'taxonomy' => 'award',
+            'field' => 'term_id',
+            'terms' => $awards,
+        );
+    }
+
+    // Check if languages are set
+    if (isset($_POST['lang']) && !empty($_POST['lang'])) {
+        $langs = $_POST['lang'];
+        $args['tax_query'][] = array(
+            'taxonomy' => 'language',
+            'field' => 'term_id',
+            'terms' => $langs,
+        );
+    }
+
+    // Check if search is set
+    if (isset($_POST['searchText']) && !empty($_POST['searchText'])) {
+        // echo $_POST['searchText'];
+        $search_word = sanitize_text_field($_POST['searchText']);
+        $args['s'] = $search_word; // Add search query
+    }
+
+    $response = array(
+        'cards' => '',
+        'taxonomies' => array(),
+        'count' => 0,
+    );
+
+
+    $the_query = new WP_Query($args);
+
+    // Get the count of posts
+    $response['count'] = $the_query->found_posts;
+
+    $relevant_terms = array();
+    if ($the_query->have_posts()):
+        ob_start(); // Start output buffering for card HTML
+        while ($the_query->have_posts()):
+            $the_query->the_post();
+            $post_id = get_the_ID();
+
+            // Collect taxonomy terms for the current post
+            foreach (array('genre', 'award', 'language') as $taxonomy) {
+                $terms = wp_get_post_terms($post_id, $taxonomy);
+                // print_r($terms);
+                foreach ($terms as $term) {
+                    // print_r($term);
+                    $relevant_terms[$taxonomy][$term->term_id] = $term->name;
+                }
+            }
+
+            // // If no relevant terms were found, fetch all terms from the taxonomies
+            //     if (empty($relevant_terms)) {
+            //         foreach (array('genre', 'award', 'language') as $taxonomy) {
+            //             $terms = get_terms(array(
+            //                 'taxonomy' => $taxonomy,
+            //                 'hide_empty' => false, // Get all terms, even if they are not assigned to posts
+            //             ));
+            //             if (!empty($terms) && !is_wp_error($terms)) {
+            //                 foreach ($terms as $term) {
+            //                     $relevant_terms[$taxonomy][$term->term_id] = $term->name;
+            //                 }
+            //             }
+            //         }
+            //     }
+            ?>
+
+            <div class="col-4">
+                <div class="card">
+                    <img src="https://picsum.photos/id/10/1920/1080" class="card-img-top" alt="img">
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo the_title(); ?></h5>
+                        <p class="card-text"><?php the_excerpt(); ?></p>
+                        <a href="<?php the_permalink(); ?>" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+            <?php
+        endwhile;
+
+        ?>
+        <div class="ajax_pagination d-flex justify-content-center my-5" style="gap: 10px; font-size: 20px;">
+            <?php
+            echo paginate_links(array(
+                'base' => '%_%',
+                'format' => '?paged=%#%',
+                'current' => $paged,
+                'total' => $the_query->max_num_pages,
+                'prev_text' => __('« Prev'),
+                'next_text' => __('Next »'),
+            ));
+            ?>
+        </div>
+        
+        <?php
+        $response['cards'] = ob_get_clean(); // Get the buffered HTML content
+
+        // Generate taxonomy HTML
+        ob_start(); // Start output buffering for taxonomy HTML
+
+
+        foreach ($relevant_terms as $taxonomy => $terms) {
+            // var_dump($taxonomy)
+            ?>
+            <ul class="nav nav-pills nav-fill mb-5 flex-column">
+                <li class="nav-item">
+                    <a class="nav-link btn_cat active disabled" href="#"><?php echo ucfirst($taxonomy) ?></a>
+                </li>
+                <?php
+                foreach ($terms as $term_id => $term_name) {
+                    ?>
+                    <div class="filter_check">
+                        <input type="checkbox" name="<?php echo $taxonomy; ?>" value="<?php echo $term_id; ?>"
+                            id="<?php echo $term_name; ?>">
+                        <label for="<?php echo $term_name; ?>"><?php echo $term_name; ?></label>
+                    </div>
+                    <?php
+                }
+                ?>
+            </ul>
+            <?php
+        }
+        $response['taxonomies'] = ob_get_clean();
+        // var_dump($response['texonomy']);
+        // echo $response;
+        wp_reset_postdata();
+        
+    endif;
+    // Send JSON response
+    wp_send_json($response);
+
+    wp_die(); // Important: Stop further processing and return clean response
+}
+add_action('wp_ajax_tab_related_post', 'tab_related_post');
+add_action('wp_ajax_nopriv_tab_related_post', 'tab_related_post');
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>function.js<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+$(document).ready(function () {
+  let postCount = $(".postCount").text();
+  $(".post_count").text(postCount + "Posts Found");
+  // console.log(postCount);
+
+  let selectedLang = [];
+  let selectedAwards = [];
+  let selectedGenres = [];
+  let page = 1;
+  let searchText = "";
+
+
+  $(document).on('change', '.filter_check input[type="checkbox"]', function () {
+    fetchposts();
+  });
+
+  $(document).on("click", ".ajax_pagination a", function (e) {
+    e.preventDefault();
+
+    page = $(this).attr("href").split("paged=")[1] || 1; // Get the clicked page number
+
+    // console.log(selectedGenres);
+    loadPosts(selectedGenres, selectedAwards, selectedLang, page, searchText);
+  });
+
+
+  $("#search_form").submit(function (e) {
+    e.preventDefault();
+    searchText = $("#search_field").val() || "";
+    console.log(searchText);
+    loadPosts(selectedGenres, selectedAwards, selectedLang, page, searchText);
+  });
+
+  // search with keyup event
+  // $("#search_field").keyup(function (e) {
+  //   e.preventDefault();
+  //   searchText = $("#search_field").val() || "";
+  //   // console.log(searchText);
+
+  //   loadPosts(selectedGenres, selectedAwards, selectedLang, page, searchText);
+  // });
+
+  $(".reset").click(function () {
+    // console.log("test");
+    $(this).parent().find('input[type="checkbox"]').prop("checked", false);
+    $(this).parent().find(".reset").hide();
+
+    $(this).parent().find(".genreCheckCount").text("");
+    $(this).parent().find(".awardCheckCount").text("");
+    $(this).parent().find(".langCheckCount").text("");
+
+    // console.log(searchText);
+    fetchposts();
+  });
+
+  function fetchposts() {
+    selectedGenres = [];
+    selectedAwards = [];
+    selectedLang = [];
+    page = 1;
+
+    // console.log(searchText);
+    // searchText = $("#search_field").val() || "";
+
+    $(".preloader").addClass("active");
+    $(".post_count").text("Loading...");
+
+    $('input[name="genre"]:checked').each(function () {
+      selectedGenres.push($(this).val());
+    });
+
+    $('input[name="award"]:checked').each(function () {
+      selectedAwards.push($(this).val());
+    });
+
+    $('input[name="lang"]:checked').each(function () {
+      selectedLang.push($(this).val());
+    });
+
+    checkCounter();
+
+    appendTexonomy();
+
+    loadPosts(selectedGenres, selectedAwards, selectedLang, page, searchText);
+  }
+
+  function getCheckedValues() {
+    let selectedCheckboxes = {};
+    
+    $(".filter_check input[type='checkbox']:checked").each(function () {
+      selectedCheckboxes[$(this).attr("id")] = true;
+    });
+
+    // console.log(selectedCheckboxes);
+    
+  
+    return selectedCheckboxes;
+  }
+
+  function loadPosts(genre, award, lang, page, searchText) {
+    // console.log(searchText);
+    let checkedValues = getCheckedValues(); // Store checked checkboxes before the AJAX call
+
+    $.ajax({
+      url: "/wp-admin/admin-ajax.php",
+      type: "POST",
+      data: {
+        action: "tab_related_post",
+        genre: genre,
+        award: award,
+        lang: lang,
+        paged: page,
+        searchText: searchText,
+      },
+      success: function (response) {
+        if (searchText != "") {
+          if (response.taxonomies != "") {
+            // $(".inner_wrapper").empty();
+            $(".inner_wrapper").html(response.taxonomies);
+          } else {
+            $(".inner_wrapper").empty();
+            $(".inner_wrapper").html(
+              "<span class='no_data_found alert alert-danger text-center d-inline-block' role='alert'>No Texonomy found found</span>"
+            );
+          }
+        }
+        if (response.cards != "") {
+          $(".inner_wrap .row").empty();
+          $(".inner_wrap .row").append(response.cards);
+          $(".post_count").text(response.count + " Posts Found");
+        } else {
+          $(".post_count").text(response.count + " Posts Found");
+          $(".inner_wrap .row").html(
+            "<span class='no_data_found alert alert-danger text-center' role='alert'>No posts founds</span>"
+          );
+        }
+
+        // / Restore checked checkboxes after updating the UI
+      $(".filter_check input[type='checkbox']").each(function () {
+        let checkboxId = $(this).attr("id");
+        if (checkedValues[checkboxId]) {
+          $(this).prop("checked", true);
+        }
+      });
+
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+      complete: function () {
+        // Hide preloader
+        $(".preloader").removeClass("active");
+        $(".pagination").hide();
+      },
+    });
+  }
+
+  function checkCounter() {
+    let genreChecked = $(".filter_check").find(
+      'input[name="genre"]:checked'
+    ).length;
+    let awardChecked = $(".filter_check").find(
+      'input[name="award"]:checked'
+    ).length;
+    let langChecked = $(".filter_check").find(
+      'input[name="lang"]:checked'
+    ).length;
+
+    let genreContainer = $(".filter_check").find('input[name="genre"]');
+    let awardContainer = $(".filter_check").find('input[name="award"]');
+    let langContainer = $(".filter_check").find('input[name="lang"]');
+
+    // console.log(genreContainer.parent().parent().find('.reset'));
+
+    genreChecked = genreChecked == 0 ? "" : genreChecked;
+    awardChecked = awardChecked == 0 ? "" : awardChecked;
+    langChecked = langChecked == 0 ? "" : langChecked;
+
+    if (genreChecked > 0) {
+      genreContainer.parent().parent().find(".reset").show();
+    } else {
+      genreContainer.parent().parent().find(".reset").hide();
+    }
+    if (awardChecked > 0) {
+      awardContainer.parent().parent().find(".reset").show();
+    } else {
+      awardContainer.parent().parent().find(".reset").hide();
+    }
+    if (langChecked > 0) {
+      langContainer.parent().parent().find(".reset").show();
+    } else {
+      langContainer.parent().parent().find(".reset").hide();
+    }
+
+    $(".genreCheckCount").text(genreChecked);
+    $(".awardCheckCount").text(awardChecked);
+    $(".langCheckCount").text(langChecked);
+
+    // console.log(genreChecked);
+    // console.log(awardChecked);
+    // console.log(langChecked);
+
+    // console.log(selectedLang);
+  }
+
+  function appendTexonomy() {
+    let appendText = "";
+
+    // Clear existing tags before appending new ones
+    $(".inner_wrapper .tag_box").empty();
+
+    $(".filter_check input:checked").each(function () {
+      appendText = $(this).attr("id");
+      $(".inner_wrapper .tag_box").append(
+        `<button class='tex_btn badge rounded-pill bg-warning text-dark' data-id="${appendText}">${appendText}</button>`
+      );
+      // console.log(appendText);
+    });
+  }
+
+  $(document).on("click", ".tag_box .tex_btn", function () {
+    let tagId = $(this).attr("data-id");
+    $(`#${tagId}`).prop("checked", false);
+    $(this).remove();
+
+    fetchposts();
+  });
+});
+
+
+
